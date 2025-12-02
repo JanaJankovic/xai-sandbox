@@ -329,9 +329,9 @@ def main():
 
     # audio -> 1D TS
     max_len = None  # optional upper cap on frames; None = use true min length
-    sr = 16000
-    frame_length = 1024
-    hop_length = 512
+    sr = 16000  # downsample from 44.1khz to 16khz.
+    frame_length = 1024  # or window size in ts forecasting
+    hop_length = 512  # distance between frames
 
     # shapelets
     n_shapelets_per_class = 5  # total number of shapelets
