@@ -104,6 +104,22 @@ def load_bee_dataset(
         raise RuntimeError("No audio files found under given directories.")
 
     lengths = np.array([x.shape[0] for x in X_raw], dtype=np.int64)
+
+    # --- RMS length stats (overall + per directory) ---
+    print(
+        f"[RMS] Overall: min={lengths.min()}, "
+        f"max={lengths.max()}, mean={lengths.mean():.2f}"
+    )
+    for label, sub_name in class_dirs.items():
+        idx = [i for i, lab in enumerate(y_list) if lab == label]
+        lens_cls = lengths[idx]
+        print(
+            f"[RMS] Class {label} ({sub_name}): "
+            f"n={len(lens_cls)}, min={lens_cls.min()}, "
+            f"max={lens_cls.max()}, mean={lens_cls.mean():.2f}"
+        )
+    # -----------------------------------------------
+
     min_len = int(lengths.min())
 
     if max_len is not None:
@@ -329,9 +345,9 @@ def main():
 
     # audio -> 1D TS
     max_len = None  # optional upper cap on frames; None = use true min length
-    sr = 16000  # downsample from 44.1khz to 16khz.
-    frame_length = 1024  # or window size in ts forecasting
-    hop_length = 512  # distance between frames
+    sr = 32000  # downsample from 44.1khz to 16khz.
+    frame_length = 512  # or window size in ts forecasting
+    hop_length = 256  # distance between frames
 
     # shapelets
     n_shapelets_per_class = 5  # total number of shapelets
