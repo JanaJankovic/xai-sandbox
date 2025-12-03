@@ -12,7 +12,10 @@ dependencies = [
     "librosa>=0.11.0",
     "matplotlib>=3.10.7",
     "numpy>=2.3.5",
+    "pandas>=2.3.3",
     "scikit-learn>=1.7.2",
+    "stumpy>=1.13.0",
+    "torch>=2.9.1",
 ]
 
 [build-system]
@@ -29,3 +32,4 @@ include = ["work*"]
 [project.scripts]
 sound_rms = "work.queen_presence.lr_rms:main"
 sound_spec = "work.queen_presence.lr_spec:main"
+sound_nn = "work.queen_presence.neural:main"
