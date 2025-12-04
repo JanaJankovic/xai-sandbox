@@ -15,8 +15,8 @@ from torch.utils.data import Dataset, DataLoader
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 
-from aix360.aix360.algorithms.tssaliency import TSSaliencyExplainer
-from aix360.aix360.algorithms.tsutils.tsframe import tsFrame
+from aix360.algorithms.tssaliency import TSSaliencyExplainer
+from aix360.algorithms.tsutils.tsframe import tsFrame
 
 import captum.attr as ca
 
@@ -501,143 +501,6 @@ def main():
 
     joblib.dump(results, OUTPUT_DIR / "results.joblib")
     return results
-
-
-def make_tssaliency_explainer(
-    artifacts_path: str | Path,
-    base_value: list[float] | None = None,
-    n_samples: int = 50,
-    gradient_samples: int = 25,
-    device: str | None = None,
-):
-    """
-    Wraps the saved PyTorch LSTM in a numpy-based callable for TSSaliencyExplainer.
-    """
-    artifacts_path = Path(artifacts_path)
-    artifacts = joblib.load(artifacts_path)
-
-    model: torch.nn.Module = artifacts["model"]
-    scaler = artifacts["scaler"]
-    config = artifacts["config"]
-    seq_len = int(config["seq_len"])
-
-    if device is None:
-        device = "cuda" if torch.cuda.is_available() else "cpu"
-    device = torch.device(device)
-
-    model.to(device)
-    model.eval()
-
-    def model_fn(x_np: np.ndarray) -> np.ndarray:
-        """
-        x_np: shape (T, F) or (B, T, F), where T == seq_len, F == 1 ('load')
-        returns: shape (B, 1) – prediction in ORIGINAL load units
-        """
-        x_arr = np.asarray(x_np, dtype=np.float32)
-
-        if x_arr.ndim == 2:  # (T, F)
-            x_arr = x_arr[None, ...]  # (1, T, F)
-        elif x_arr.ndim != 3:
-            raise ValueError(f"Unexpected input shape {x_arr.shape}")
-
-        B, T, F = x_arr.shape
-        if T != seq_len:
-            raise ValueError(f"Expected T={seq_len}, got {T}")
-        if F != 1:
-            raise ValueError(f"Expected F=1 (univariate load), got {F}")
-
-        # scale using the same scaler as training
-        x_flat = x_arr.reshape(-1, F)  # (B*T, 1)
-        x_flat_scaled = scaler.transform(x_flat)
-        x_scaled = x_flat_scaled.reshape(B, T, F)
-
-        x_tensor = torch.from_numpy(x_scaled).to(device)
-
-        with torch.no_grad():
-            y_scaled = model(x_tensor).cpu().numpy()  # (B,)
-
-        # inverse-transform prediction back to load units
-        y_scaled_2d = y_scaled.reshape(-1, 1)
-        y_unscaled = scaler.inverse_transform(y_scaled_2d).ravel()  # (B,)
-
-        return y_unscaled.reshape(B, 1)  # shape (B, 1) as required
-
-    # choose base value: mean load over training set (in original units)
-    if base_value is None:
-        X_train = artifacts["X_train"]  # (N, seq_len, 1) – scaled
-        train_flat_scaled = X_train.reshape(-1, 1)
-        train_flat_unscaled = scaler.inverse_transform(train_flat_scaled)
-        base_value = [float(train_flat_unscaled.mean())]
-
-    explainer = TSSaliencyExplainer(
-        model=model_fn,
-        input_length=seq_len,
-        feature_names=["load"],
-        base_value=base_value,
-        n_samples=n_samples,
-        gradient_samples=gradient_samples,
-    )
-
-    return explainer, artifacts
-
-
-def plot_tssaliency_example(
-    artifacts_path: str | Path,
-    example_index: int = 0,
-):
-    """
-    Runs TSSaliency on one test window and plots:
-    - load(t) for that window
-    - |saliency(t)| as bar plot
-    """
-    explainer, artifacts = make_tssaliency_explainer(artifacts_path)
-    scaler = artifacts["scaler"]
-    X_test: np.ndarray = artifacts["X_test"]  # (N, seq_len, 1)
-    config = artifacts["config"]
-    seq_len = int(config["seq_len"])
-
-    if example_index < 0 or example_index >= X_test.shape[0]:
-        raise IndexError(
-            f"example_index {example_index} out of range [0, {X_test.shape[0]-1}]"
-        )
-
-    # one window in ORIGINAL units
-    window_scaled = X_test[example_index]  # (seq_len, 1)
-    window_unscaled = scaler.inverse_transform(window_scaled)[:, 0]  # (seq_len,)
-
-    # build a tsFrame (AIX360 time-series wrapper) – synthetic hourly timestamps
-    idx = pd.date_range("2000-01-01", periods=seq_len, freq="H")
-    df_window = pd.DataFrame({"load": window_unscaled}, index=idx)
-    ts = tsFrame(df_window)
-
-    # run TSSaliency
-    explanation = explainer.explain_instance(ts)
-
-    saliency = np.abs(np.asarray(explanation["saliency"]).reshape(-1))
-    timestamps = pd.to_datetime(explanation["timestamps"])
-    input_data = np.asarray(explanation["input_data"])[
-        :, 0
-    ]  # load values that explainer saw
-
-    fig, ax1 = plt.subplots(figsize=(10, 4))
-
-    ax1.plot(timestamps, input_data, label="load", linewidth=2)
-    ax1.set_ylabel("Load")
-    ax1.grid(True, alpha=0.3)
-
-    ax2 = ax1.twinx()
-    ax2.bar(timestamps, saliency, alpha=0.3)
-    ax2.set_ylabel("TSSaliency attribution")
-
-    fig.suptitle("TSSaliency for one prediction window")
-    fig.autofmt_xdate()
-    plt.show()
-
-    return {
-        "timestamps": timestamps,
-        "load": input_data,
-        "saliency": saliency,
-    }
 
 
 if __name__ == "__main__":
