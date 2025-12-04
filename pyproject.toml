@@ -36,3 +36,4 @@ include = ["work*"]
 sound_rms = "work.queen_presence.lr_rms:main"
 sound_spec = "work.queen_presence.lr_spec:main"
 sound_nn = "work.queen_presence.neural:main"
+lake = "work.lake.main:main"
