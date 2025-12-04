@@ -10,6 +10,7 @@ dependencies = [
     "ipykernel>=7.1.0",
     "joblib>=1.5.2",
     "librosa>=0.11.0",
+    "lime",
     "matplotlib>=3.10.7",
     "numpy>=2.3.5",
     "pandas>=2.3.3",
