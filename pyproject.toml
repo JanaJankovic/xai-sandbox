@@ -5,6 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "aix360",
     "captum>=0.7.0",
     "dvc>=3.64.1",
     "dvc-s3>=3.2.2",
@@ -28,6 +29,9 @@ build-backend = "setuptools.build_meta"
 [tool.uv]
 package = true
 
+[tool.uv.sources]
+aix360 = { git = "https://github.com/Trusted-AI/AIX360.git" }
+
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["work*"]
@@ -37,3 +41,4 @@ sound_rms = "work.queen_presence.lr_rms:main"
 sound_spec = "work.queen_presence.lr_spec:main"
 sound_nn = "work.queen_presence.neural:main"
 lake = "work.lake.main:main"
+load = "work.load.main:main"

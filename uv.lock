@@ -158,6 +158,17 @@ wheels = [
 ]
 
 [[package]]
+name = "aix360"
+version = "0.3.0"
+source = { git = "https://github.com/Trusted-AI/AIX360.git#1ea7fc1f38925908e66cf3c5616fddfce7bfd571" }
+dependencies = [
+    { name = "matplotlib" },
+    { name = "numpy" },
+    { name = "pandas" },
+    { name = "scikit-learn" },
+]
+
+[[package]]
 name = "amqp"
 version = "5.3.1"
 source = { registry = "https://pypi.org/simple" }
@@ -3571,6 +3582,7 @@ name = "xai-sandbox"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
+    { name = "aix360" },
     { name = "captum" },
     { name = "dvc" },
     { name = "dvc-s3" },
@@ -3589,6 +3601,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
+    { name = "aix360", git = "https://github.com/Trusted-AI/AIX360.git" },
     { name = "captum", specifier = ">=0.7.0" },
     { name = "dvc", specifier = ">=3.64.1" },
     { name = "dvc-s3", specifier = ">=3.2.2" },
