@@ -349,6 +349,21 @@ wheels = [
 ]
 
 [[package]]
+name = "captum"
+version = "0.7.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "matplotlib" },
+    { name = "numpy" },
+    { name = "torch" },
+    { name = "tqdm" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/5b/0b/db1c79ae2496bf61d10d3439e85321d3df3cefc7a9960347f38722049872/captum-0.7.0.tar.gz", hash = "sha256:7ca87d0dc67b3b7589a730b970b9536172a5468e0e31bf8657fdd73abc568a33", size = 1237972, upload-time = "2023-12-05T08:32:07.126Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e1/76/b21bfd2c35cab2e9a4b68b1977f7488c246c8cffa31e3361ee7610e8b5af/captum-0.7.0-py3-none-any.whl", hash = "sha256:2cbec9aa4b6ec325c2fdf369c1fdabb011017122e2314e2af009496d53a0757c", size = 1330385, upload-time = "2023-12-05T08:32:04.88Z" },
+]
+
+[[package]]
 name = "celery"
 version = "5.6.0"
 source = { registry = "https://pypi.org/simple" }
@@ -2666,6 +2681,23 @@ wheels = [
 ]
 
 [[package]]
+name = "pyod"
+version = "2.0.6"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "joblib" },
+    { name = "matplotlib" },
+    { name = "numba" },
+    { name = "numpy" },
+    { name = "scikit-learn" },
+    { name = "scipy" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/09/89/403bcf8cc00e44295d0f9bb31eed2ace8ca8247b71ff5a946408c57b15ed/pyod-2.0.6.tar.gz", hash = "sha256:4fb51575ca9bec123f140cad9bb5d0e0f0872734ea11b8afcee14209c0331f5c", size = 173730, upload-time = "2025-12-02T18:29:52.103Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/fa/fe/849ed734cffe60fa22ae4d7327166323af3290302f7586fa860097f92e66/pyod-2.0.6-py3-none-any.whl", hash = "sha256:6120c7f40c0e595041a3316eedb646bf154b49984cb8353c0f6a347dc4fbdbc4", size = 204654, upload-time = "2025-12-02T18:29:50.977Z" },
+]
+
+[[package]]
 name = "pyparsing"
 version = "3.2.5"
 source = { registry = "https://pypi.org/simple" }
@@ -3539,6 +3571,7 @@ name = "xai-sandbox"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
+    { name = "captum" },
     { name = "dvc" },
     { name = "dvc-s3" },
     { name = "ipykernel" },
@@ -3548,6 +3581,7 @@ dependencies = [
     { name = "matplotlib" },
     { name = "numpy" },
     { name = "pandas" },
+    { name = "pyod" },
     { name = "scikit-learn" },
     { name = "stumpy" },
     { name = "torch" },
@@ -3555,6 +3589,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
+    { name = "captum", specifier = ">=0.7.0" },
     { name = "dvc", specifier = ">=3.64.1" },
     { name = "dvc-s3", specifier = ">=3.2.2" },
     { name = "ipykernel", specifier = ">=7.1.0" },
@@ -3564,6 +3599,7 @@ requires-dist = [
     { name = "matplotlib", specifier = ">=3.10.7" },
     { name = "numpy", specifier = ">=2.3.5" },
     { name = "pandas", specifier = ">=2.3.3" },
+    { name = "pyod", specifier = ">=2.0.6" },
     { name = "scikit-learn", specifier = ">=1.7.2" },
     { name = "stumpy", specifier = ">=1.13.0" },
     { name = "torch", specifier = ">=2.9.1" },
