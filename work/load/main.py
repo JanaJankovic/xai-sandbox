@@ -15,8 +15,6 @@ from torch.utils.data import Dataset, DataLoader
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 
-from aix360.algorithms.tssaliency import TSSaliencyExplainer
-from aix360.algorithms.tsutils.tsframe import tsFrame
 
 import captum.attr as ca
 
@@ -347,7 +345,7 @@ def _prepare_example_for_captum(
     X_test: np.ndarray = artifacts["X_test"]
 
     if device is None:
-        device = "cuda" if torch.cuda.is_available() else "cpu"
+        device = "cpu"
     device = torch.device(device)
 
     model.to(device)
